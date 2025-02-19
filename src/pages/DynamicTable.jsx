@@ -31,11 +31,16 @@ const DynamicTable = () => {
     const { value } = e.target;
     const updatedRows = [...rows];
     updatedRows[rowIndex][field] = field === "vehicleNo" ? value.toUpperCase() : value;
-    if (["deliveryWeight", "rate", "shippingCharges", "paidBy"].includes(field)) {
+
+    if (["deliveryWeight", "rate", "shippingCharge1", "shippingCharge2", "paidBy"].includes(field)) {
       const weight = parseFloat(updatedRows[rowIndex].deliveryWeight) || 0;
       const rate = parseFloat(updatedRows[rowIndex].rate) || 0;
-      const charges = parseFloat(updatedRows[rowIndex].shippingCharges) || 0;
-      updatedRows[rowIndex].total = updatedRows[rowIndex].paidBy === "Customer" ? weight * rate - charges : weight * rate;
+      const charge1 = parseFloat(updatedRows[rowIndex].shippingCharge1) || 0;
+      const charge2 = parseFloat(updatedRows[rowIndex].shippingCharge2) || 0;
+      const totalShippingCharge = charge1 + charge2;
+
+      updatedRows[rowIndex].totalShippingCharge = totalShippingCharge;
+      updatedRows[rowIndex].total = updatedRows[rowIndex].paidBy === "Customer" ? weight * rate - totalShippingCharge : weight * rate;
     }
     setRows(updatedRows);
   };
@@ -48,7 +53,9 @@ const DynamicTable = () => {
       companyWeight: "",
       deliveryWeight: "",
       rate: "",
-      shippingCharges: "",
+      shippingCharge1: "",
+      shippingCharge2: "",
+      totalShippingCharge: "",
       paidBy: "Customer",
       total: ""
     }]);
@@ -67,11 +74,11 @@ const DynamicTable = () => {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Dynamic Table</h1>
+    <div className="p-4 pt-14">
+      <h1 className="text-xl font-bold mb-4">Customer Table</h1>
       <table className="table-auto border-collapse border border-gray-300 w-full">
         <thead>
-          <tr className="bg-gray-200">
+          <tr className="bg-gradient-to-br from-gray-200 to-gray-400">
             <th className="border px-2 py-2">#</th>
             <th className="border px-4 py-2">Date</th>
             <th className="border px-4 py-2">Customer</th>
@@ -79,7 +86,9 @@ const DynamicTable = () => {
             <th className="border px-4 py-2">Company Weight (kg)</th>
             <th className="border px-4 py-2">Delivery Weight (kg)</th>
             <th className="border px-4 py-2">Rate (/kg)</th>
-            <th className="border px-4 py-2">Shipping Charges</th>
+            <th className="border px-4 py-2">Shipping Charge 1</th>
+            <th className="border px-4 py-2">Shipping Charge 2</th>
+            <th className="border px-4 py-2">Total Shipping Charge</th>
             <th className="border px-4 py-2">Paid By</th>
             <th className="border px-4 py-2">Total (/-)</th>
             <th className="border px-4 py-2">View More</th>
@@ -108,8 +117,12 @@ const DynamicTable = () => {
                 <input type="text" className="w-full" value={row.rate} onChange={(e) => handleInputChange(e, index, "rate")} />
               </td>
               <td className="border px-4 py-2">
-                <input type="text" className="w-full" value={row.shippingCharges} onChange={(e) => handleInputChange(e, index, "shippingCharges")} />
+                <input type="text" className="w-full" value={row.shippingCharge1} onChange={(e) => handleInputChange(e, index, "shippingCharge1")} />
               </td>
+              <td className="border px-4 py-2">
+                <input type="text" className="w-full" value={row.shippingCharge2} onChange={(e) => handleInputChange(e, index, "shippingCharge2")} />
+              </td>
+              <td className="border px-4 py-2">{row.totalShippingCharge}</td>
               <td className="border px-4 py-2">
                 <select className="w-full" value={row.paidBy} onChange={(e) => handleInputChange(e, index, "paidBy")}>
                   <option value="Customer">Customer</option>
